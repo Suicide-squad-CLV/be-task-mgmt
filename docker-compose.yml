@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  task-be:
+    container_name: task-be
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: development
+    command: npm run start:dev
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - '3000:3000'
+
+volumes:
+  task-magmt:
+    driver: local
