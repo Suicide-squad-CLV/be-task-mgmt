@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { DatabaseModule } from './database/database.module';
-import { AuthenticateModule } from './modules/authenticate/authenticate.module';
 import { UserModule } from './modules/user/user.module';
 import { TaskModule } from './modules/task/task.module';
 import * as Joi from '@hapi/joi';
@@ -11,7 +10,7 @@ import * as Joi from '@hapi/joi';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      cache: true, // cache property in this forRoot object.
+      cache: true, // cache property in this forRoot object
       expandVariables: true,
       validationSchema: Joi.object({
         DATABASE_HOST: Joi.string().required(),
@@ -19,12 +18,11 @@ import * as Joi from '@hapi/joi';
         DATABASE_USERNAME: Joi.string().required(),
         DATABASE_PASSWORD: Joi.string().required(),
         DATABASE_NAME: Joi.string().required(),
-        PORT: Joi.number(),
         DATABASE_SYNC: Joi.boolean().default(false),
+        PORT: Joi.number(),
       }),
     }),
     DatabaseModule,
-    AuthenticateModule,
     UserModule,
     TaskModule,
   ],

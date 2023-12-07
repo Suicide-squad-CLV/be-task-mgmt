@@ -8,7 +8,7 @@ import {
 
 @ObjectType()
 @Entity('reset_password')
-class ResetPasswordEntity {
+class UserPasswordResetEntity {
   @PrimaryGeneratedColumn('uuid')
   @Field()
   id: number;
@@ -26,4 +26,4 @@ class ResetPasswordEntity {
   created_at: Date;
 }
 
-export default ResetPasswordEntity;
+export default UserPasswordResetEntity;
