@@ -1,45 +1,79 @@
 import UserEntity from 'src/modules/user/entities/user.entity';
 import {
   Column,
-  DeleteDateColumn,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import TaskStatusEntity from './task_status.entity';
+import StatusEntity from './status.entity';
+import { Task } from 'src/protos/task';
 
 @Entity('tasks')
 class TaskEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn('increment')
+  id: number;
 
-  @Column({ nullable: true })
-  user_id: string;
+  @Column({
+    type: 'varchar',
+    length: 200,
+    name: 'task_title',
+    nullable: false,
+  })
+  taskTitle: string;
+
+  @Column({
+    type: 'varchar',
+    length: 500,
+    name: 'task_description',
+    nullable: true,
+  })
+  taskDescription?: string;
+
+  @Column({
+    type: 'boolean',
+    name: 'delete_flag',
+    nullable: true,
+    default: false,
+  })
+  isDeleted?: boolean;
+
+  @CreateDateColumn({
+    type: 'timestamp without time zone',
+    name: 'create_date',
+    nullable: false,
+    default: new Date(),
+  })
+  createdAt?: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamp without time zone',
+    name: 'update_date',
+    nullable: false,
+    default: new Date(),
+  })
+  updatedAt?: Date;
 
   @ManyToOne(() => UserEntity, (user) => user.tasks)
-  user: UserEntity;
+  user?: UserEntity;
 
-  @Column({ nullable: true })
-  task_status_id: string;
+  @ManyToOne(() => StatusEntity, (status) => status.tasks)
+  status?: StatusEntity;
 
-  @ManyToOne(() => TaskStatusEntity, (status) => status.tasks)
-  task_status: TaskStatusEntity;
+  constructor(partial: Partial<TaskEntity>) {
+    Object.assign(this, partial);
+  }
 
-  @Column()
-  title: Date;
-
-  @Column()
-  description: string;
-
-  @DeleteDateColumn({ type: 'timestamp', default: null, nullable: true })
-  deleted_at: Date;
-
-  @Column()
-  created_at: Date;
-
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
-  updated_at: Date;
+  toGRPCTask(): Task {
+    return {
+      id: this.id,
+      taskTitle: this.taskTitle,
+      taskDescription: this.taskDescription || '',
+      isDeleted: this.isDeleted || false,
+      assignUserId: this.user ? this.user.id.toString() : '',
+    };
+  }
 }
 
 export default TaskEntity;

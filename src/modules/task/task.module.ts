@@ -3,10 +3,10 @@ import { TaskService } from './task.service';
 import { TaskController } from './task.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import TaskEntity from './entities/task.entity';
-import TaskStatusEntity from './entities/task_status.entity';
+import StatusEntity from './entities/status.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TaskEntity, TaskStatusEntity])],
+  imports: [TypeOrmModule.forFeature([TaskEntity, StatusEntity])],
   providers: [TaskService],
   controllers: [TaskController],
 })
