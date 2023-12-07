@@ -1,10 +1,10 @@
 import { Controller } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import {
-  FindUserInfo,
   RegisterDto,
   User,
+  UserCreadentials,
   UserEmail,
   UserGRPCServiceController,
   UserGRPCServiceControllerMethods,
@@ -15,22 +15,27 @@ import { Observable } from 'rxjs';
 
 @Controller('user')
 @ApiTags('Users')
+@ApiBearerAuth()
 @UserGRPCServiceControllerMethods()
 export class UserController implements UserGRPCServiceController {
   constructor(private readonly usersService: UserService) {}
 
   findOne(request: UserId): Promise<User> | Observable<User> | User {
-    console.log('request', request);
-    return null as unknown as User;
+    return this.usersService.getById(request.id);
   }
 
   findByEmail(email: UserEmail): Promise<User> | Observable<User> | User {
     return this.usersService.getByEmail(email.email);
   }
 
-  findMany(request: FindUserInfo): Promise<Users> | Observable<Users> | Users {
-    console.log('request', request);
-    return null as unknown as Users;
+  findByCredentials(
+    payload: UserCreadentials,
+  ): Promise<User> | Observable<User> | User {
+    return this.usersService.findByCredentials(payload);
+  }
+
+  findMany(): Promise<Users> | Observable<Users> | Users {
+    return this.usersService.getUsers();
   }
 
   create(request: RegisterDto): Promise<User> | Observable<User> | User {

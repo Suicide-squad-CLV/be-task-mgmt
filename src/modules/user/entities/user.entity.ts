@@ -18,7 +18,9 @@ class UserEntity {
   @Column()
   fullname: string;
 
-  @Column()
+  @Column({
+    unique: true,
+  })
   email: string;
 
   @Column()
@@ -53,9 +55,8 @@ class UserEntity {
   updatedAt: Date;
 
   getUserProto(): User {
-    console.log('toString()', this);
     return {
-      id: this.id.toString(),
+      id: this.id,
       fullname: this.fullname,
       email: this.email,
       password: this.password ?? '',
