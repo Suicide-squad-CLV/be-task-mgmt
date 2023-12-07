@@ -8,19 +8,22 @@ export interface Users {
   users: User[];
 }
 
+export interface Empty {
+}
+
 export interface RegisterDto {
   fullname: string;
   email: string;
   password: string;
 }
 
-export interface FindUserInfo {
-  fullname: string;
+export interface UserCreadentials {
   email: string;
+  password: string;
 }
 
 export interface UserId {
-  id: string;
+  id: number;
 }
 
 export interface UserEmail {
@@ -28,7 +31,7 @@ export interface UserEmail {
 }
 
 export interface User {
-  id: string;
+  id: number;
   fullname: string;
   email: string;
   password: string;
@@ -46,7 +49,9 @@ export interface UserGRPCServiceClient {
 
   findByEmail(request: UserEmail): Observable<User>;
 
-  findMany(request: FindUserInfo): Observable<Users>;
+  findByCredentials(request: UserCreadentials): Observable<User>;
+
+  findMany(request: Empty): Observable<Users>;
 
   create(request: RegisterDto): Observable<User>;
 }
@@ -56,14 +61,16 @@ export interface UserGRPCServiceController {
 
   findByEmail(request: UserEmail): Promise<User> | Observable<User> | User;
 
-  findMany(request: FindUserInfo): Promise<Users> | Observable<Users> | Users;
+  findByCredentials(request: UserCreadentials): Promise<User> | Observable<User> | User;
+
+  findMany(request: Empty): Promise<Users> | Observable<Users> | Users;
 
   create(request: RegisterDto): Promise<User> | Observable<User> | User;
 }
 
 export function UserGRPCServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["findOne", "findByEmail", "findMany", "create"];
+    const grpcMethods: string[] = ["findOne", "findByEmail", "findByCredentials", "findMany", "create"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("UserGRPCService", method)(constructor.prototype[method], method, descriptor);

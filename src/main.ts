@@ -9,20 +9,6 @@ import 'reflect-metadata';
 import { USER_PACKAGE_NAME } from './protos/user';
 
 async function bootstrap() {
-  // const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-  //   AppModule,
-  //   {
-  //     transport: Transport.GRPC,
-  //     options: {
-  //       package: [USER_PACKAGE_NAME],
-  //       protoPath: [join(__dirname, '../src/protos/user.proto')],
-  //       url: new ConfigService().get<string>('APP_GRPC_URL'),
-  //     },
-  //   },
-  // );
-
-  // await app.listen();
-
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   const configService = app.get(ConfigService);
@@ -32,7 +18,7 @@ async function bootstrap() {
     transport: Transport.GRPC,
     options: {
       package: [USER_PACKAGE_NAME],
-      protoPath: join(__dirname, '../src/protos/user.proto'),
+      protoPath: [join(__dirname, '../src/protos/user.proto')],
       url: configService.get<string>('APP_GRPC_URL'),
     },
   });

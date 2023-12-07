@@ -2,9 +2,10 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import UserEntity from './entities/user.entity';
 import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RegisterDto, User } from 'src/protos/user';
+import { RegisterDto, User, UserCreadentials } from 'src/protos/user';
 import * as bcrypt from 'bcrypt';
 import PostgresErrorCode from 'src/database/postgres-error.enum';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class UserService {
@@ -25,21 +26,42 @@ export class UserService {
     );
   }
 
+  async findByCredentials(payload: UserCreadentials) {
+    const user = await this.getByEmail(payload.email);
+    if (!user) {
+      throw new RpcException('User not found');
+    }
+
+    const isMatched = await bcrypt.compare(payload.password, user.password);
+
+    if (!isMatched) {
+      throw new RpcException('Wrong credentials provided');
+    }
+
+    return user;
+  }
+
   async getByIds(ids: number[]) {
     return this.usersRepository.find({
       where: { id: In(ids) },
     });
   }
 
+  async getUsers() {
+    const response = await this.usersRepository
+      .find()
+      .then((users) => users.map((user) => user.getUserProto()));
+    return { users: response };
+  }
+
   async getById(id: number) {
-    const user = await this.usersRepository.findOneBy({ id });
+    const user = await this.usersRepository.findOne({
+      where: { id },
+    });
     if (user) {
-      return user;
+      return user.getUserProto();
     }
-    throw new HttpException(
-      'User with this id does not exist',
-      HttpStatus.NOT_FOUND,
-    );
+    throw new RpcException('User not found');
   }
 
   async create(registerDto: RegisterDto): Promise<User> {
@@ -51,22 +73,14 @@ export class UserService {
       });
 
       await this.usersRepository.save(createdUser);
-      createdUser.password = undefined;
-
       return createdUser.getUserProto();
     } catch (error) {
       console.log(error);
       if (error?.code === PostgresErrorCode.UniqueViolation) {
-        throw new HttpException(
-          'User with that email already exists',
-          HttpStatus.BAD_REQUEST,
-        );
+        throw new RpcException('User already exists');
       }
 
-      throw new HttpException(
-        'Something went wrong',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new RpcException('Something went wrong' + error);
     }
   }
 
