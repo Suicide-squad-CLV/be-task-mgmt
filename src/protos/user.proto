@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package user;
+
+service UserGRPCService {
+  rpc FindOne (UserId) returns (User);
+  rpc FindByEmail (UserEmail) returns (User);
+  rpc FindMany (FindUserInfo) returns (Users);
+  rpc Create (RegisterDto) returns (User);
+}
+
+message Users {
+  repeated User users = 1;
+}
+
+message RegisterDto {
+  string fullname = 1;
+  string email = 2;
+  string password = 3;
+}
+
+message FindUserInfo {
+  string fullname = 1;
+  string email = 2;
+}
+
+message UserId {
+  string id = 1;
+}
+
+message UserEmail {
+  string email = 1;
+}
+
+message User {
+  string id = 1;
+  string fullname = 2;
+  string email = 3;
+  string password = 4;
+  string avatar = 5;
+  string refreshToken = 6;
+  bool isDeleted = 7;
+  string createdAt = 8;
+  string updatedAt = 9;
+}
