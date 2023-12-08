@@ -1,4 +1,3 @@
-import UserEntity from 'src/modules/user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -7,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import UserEntity from 'src/modules/user/entities/user.entity';
 import StatusEntity from './status.entity';
 import { Task } from 'src/protos/task';
 
