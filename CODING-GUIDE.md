@@ -1,21 +1,42 @@
-## BACKEND
+## Before start
 
-- Running the prisma studio
+1. Duplicate `.env.example` file and change name to `.env`
+2. Change the database connection
 
-      npx prisma studio
+   ```
+   DATABASE_HOST=localhost
+   DATABASE_PORT=5432
+   DATABASE_NAME="task_management"
+   DATABASE_USERNAME="postgres"
+   DATABASE_PASSWORD="12345678"
+   ```
 
-## FRONTEND
+3. Run following command
+   ```
+   yarn migrate:run
+   ```
 
-- Install package
+## Serve your application
 
-      yarn add graphql @graphql-codegen/cli @graphql-codegen/typescript @graphql-codegen/typescript-operations @graphql-codegen/typescript-react-apollo
+```
+yarn start:dev
+```
 
-- install `apollo-upload-client`
+## Configuration Email
 
-      yarn add apollo-upload-client
+1.  Turn on 2 step verification on your email
 
----
+2.  Go to App Password > Create new application > Copy generated password and pass to environment file
 
-- **Running graphql-codegen**
+```
+    EMAIL_USER="nestjs.application@gmail.com"
+    EMAIL_PASSWORD="abchf3ifjlkjsdkfj94"
+```
 
-      npx graphql-codegen
+## Start BFF source
+
+```
+yarn start:dev
+```
+
+_Change your url connection if needed_

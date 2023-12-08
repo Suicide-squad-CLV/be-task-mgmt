@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { DatabaseModule } from './database/database.module';
 import { UserModule } from './modules/user/user.module';
 import { TaskModule } from './modules/task/task.module';
+import { EmailModule } from './modules/email/email.module';
 import * as Joi from '@hapi/joi';
 
 @Module({
@@ -20,11 +21,15 @@ import * as Joi from '@hapi/joi';
         DATABASE_NAME: Joi.string().required(),
         DATABASE_SYNC: Joi.boolean().default(false),
         PORT: Joi.number(),
+        EMAIL_SERVICE: Joi.string().required(),
+        EMAIL_USER: Joi.string().required(),
+        EMAIL_PASSWORD: Joi.string().required(),
       }),
     }),
     DatabaseModule,
     UserModule,
     TaskModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [],
