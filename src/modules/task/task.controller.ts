@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
   TaskGRPCServiceControllerMethods,
-  FindTaskInfo,
+  FindTasks,
   TaskList,
   TaskGRPCServiceController,
   FindTaskId,
@@ -23,7 +23,7 @@ export class TaskController implements TaskGRPCServiceController {
   }
 
   findMany(
-    request: FindTaskInfo,
+    request: FindTasks,
   ): Promise<TaskList> | Observable<TaskList> | TaskList {
     console.log('request', request);
     return this.taskService.getAll(request);

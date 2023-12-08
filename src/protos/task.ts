@@ -8,9 +8,9 @@ export interface FindTaskId {
   id: number;
 }
 
-export interface FindTaskInfo {
+export interface FindTasks {
+  /** string assignUserName = 2; */
   title: string;
-  assignUserName: string;
 }
 
 export interface Task {
@@ -30,13 +30,13 @@ export const TASK_PACKAGE_NAME = "task";
 export interface TaskGRPCServiceClient {
   findOne(request: FindTaskId): Observable<Task>;
 
-  findMany(request: FindTaskInfo): Observable<TaskList>;
+  findMany(request: FindTasks): Observable<TaskList>;
 }
 
 export interface TaskGRPCServiceController {
   findOne(request: FindTaskId): Promise<Task> | Observable<Task> | Task;
 
-  findMany(request: FindTaskInfo): Promise<TaskList> | Observable<TaskList> | TaskList;
+  findMany(request: FindTasks): Promise<TaskList> | Observable<TaskList> | TaskList;
 }
 
 export function TaskGRPCServiceControllerMethods() {
