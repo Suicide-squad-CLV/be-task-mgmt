@@ -9,10 +9,22 @@ service UserGRPCService {
   rpc FindMany (Empty) returns (Users) {}
   rpc Create (RegisterDto) returns (User) {}
   rpc ForgotPassword (UserEmail) returns (Empty) {}
+  rpc RemoveUser (UserId) returns (Response) {}
+  rpc UpdatePassword (PasswordPayload) returns (Response) {}
 }
 
 message Users {
   repeated User users = 1;
+}
+
+message PasswordPayload {
+  string token = 1;
+  string password = 2;
+}
+
+message Response {
+  bool success = 1;
+  string message = 2;
 }
 
 message Empty {}
