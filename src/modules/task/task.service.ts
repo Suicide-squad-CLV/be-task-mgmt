@@ -12,10 +12,10 @@ export class TaskService {
   ) {}
 
   async getAll(request: FindTasks): Promise<TaskList> {
-    console.log(request);
-
     // Define condition for where clause based on FindTaskInfro value
-    const condition: any = {};
+    const condition: any = {
+      isDeleted: false,
+    };
     if (request.title) {
       condition.taskTitle = ILike(`%${request.title}%`);
     }
