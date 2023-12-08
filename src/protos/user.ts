@@ -8,6 +8,16 @@ export interface Users {
   users: User[];
 }
 
+export interface PasswordPayload {
+  token: string;
+  password: string;
+}
+
+export interface Response {
+  success: boolean;
+  message: string;
+}
+
 export interface Empty {
 }
 
@@ -56,6 +66,10 @@ export interface UserGRPCServiceClient {
   create(request: RegisterDto): Observable<User>;
 
   forgotPassword(request: UserEmail): Observable<Empty>;
+
+  removeUser(request: UserId): Observable<Response>;
+
+  updatePassword(request: PasswordPayload): Observable<Response>;
 }
 
 export interface UserGRPCServiceController {
@@ -70,6 +84,10 @@ export interface UserGRPCServiceController {
   create(request: RegisterDto): Promise<User> | Observable<User> | User;
 
   forgotPassword(request: UserEmail): Promise<Empty> | Observable<Empty> | Empty;
+
+  removeUser(request: UserId): Promise<Response> | Observable<Response> | Response;
+
+  updatePassword(request: PasswordPayload): Promise<Response> | Observable<Response> | Response;
 }
 
 export function UserGRPCServiceControllerMethods() {
@@ -81,6 +99,8 @@ export function UserGRPCServiceControllerMethods() {
       "findMany",
       "create",
       "forgotPassword",
+      "removeUser",
+      "updatePassword",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

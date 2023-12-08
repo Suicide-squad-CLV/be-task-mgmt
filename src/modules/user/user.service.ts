@@ -3,10 +3,12 @@ import UserEntity from './entities/user.entity';
 import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+  PasswordPayload,
   RegisterDto,
   User,
   UserCreadentials,
   UserEmail,
+  UserId,
 } from 'src/protos/user';
 import * as bcrypt from 'bcrypt';
 import PostgresErrorCode from 'src/database/postgres-error.enum';
@@ -14,7 +16,7 @@ import { RpcException } from '@nestjs/microservices';
 import EmailService from '../email/email.service';
 import UserPasswordResetEntity from './entities/user_password_reset.entity';
 import { ConfigService } from '@nestjs/config';
-import { AUTHEN_PATH } from 'src/common/constants';
+import { AUTHEN_PATH, DeleteValue } from 'src/common/constants';
 import * as moment from 'moment';
 
 @Injectable()
@@ -29,7 +31,12 @@ export class UserService {
   ) {}
 
   async getByEmail(email: string): Promise<User> {
-    const user = await this.usersRepository.findOneBy({ email });
+    const user = await this.usersRepository.findOne({
+      where: {
+        email: email,
+        isDeleted: DeleteValue.NO,
+      },
+    });
     if (user) {
       return user.getUserProto();
     }
@@ -57,20 +64,22 @@ export class UserService {
 
   async getByIds(ids: number[]) {
     return this.usersRepository.find({
-      where: { id: In(ids) },
+      where: { id: In(ids), isDeleted: DeleteValue.NO },
     });
   }
 
   async getUsers() {
     const response = await this.usersRepository
-      .find()
+      .find({
+        where: { isDeleted: DeleteValue.NO },
+      })
       .then((users) => users.map((user) => user.getUserProto()));
     return { users: response };
   }
 
   async getById(id: number) {
     const user = await this.usersRepository.findOne({
-      where: { id },
+      where: { id, isDeleted: DeleteValue.NO },
     });
     if (user) {
       return user.getUserProto();
@@ -103,8 +112,6 @@ export class UserService {
     if (!user) {
       throw new RpcException('Email not found');
     }
-
-    console.log('payload.email', payload.email);
 
     const entityCheck = await this.passwordRepository.findOne({
       where: { email: payload.email },
@@ -141,6 +148,60 @@ export class UserService {
         link: link,
       });
     }
+  }
+
+  // remove user
+  async removeUser(payload: UserId) {
+    const user = await this.usersRepository.findOne({
+      where: { id: payload.id, isDeleted: DeleteValue.NO },
+    });
+
+    if (!user) {
+      throw new RpcException('User is not exist');
+    }
+
+    await this.usersRepository.update(payload.id, {
+      isDeleted: DeleteValue.YES,
+    });
+
+    return {
+      success: true,
+      message: 'User deleted successfully',
+    };
+  }
+
+  async updatePassword(payload: PasswordPayload) {
+    const entityCheck = await this.passwordRepository.findOne({
+      where: {
+        token: payload.token,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+
+    if (!entityCheck) {
+      throw new RpcException('Update password failed');
+    }
+
+    // hash password and update information
+    const newPassword = await this.hashData(payload.password);
+    await this.usersRepository.update(
+      { email: entityCheck.email },
+      {
+        password: newPassword,
+      },
+    );
+
+    // remove all request change password with this email
+    await this.passwordRepository.delete({
+      email: entityCheck.email,
+    });
+
+    return {
+      success: true,
+      message: 'Password updated successfully',
+    };
   }
 
   private generateRandomStr(length: number): string {
