@@ -3,4 +3,6 @@ enum DeleteValue {
   YES = 'Y',
 }
 
-export { DeleteValue };
+const AUTHEN_PATH = '/auth/reset-password';
+
+export { DeleteValue, AUTHEN_PATH };

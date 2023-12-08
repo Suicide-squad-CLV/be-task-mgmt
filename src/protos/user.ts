@@ -54,6 +54,8 @@ export interface UserGRPCServiceClient {
   findMany(request: Empty): Observable<Users>;
 
   create(request: RegisterDto): Observable<User>;
+
+  forgotPassword(request: UserEmail): Observable<Empty>;
 }
 
 export interface UserGRPCServiceController {
@@ -66,11 +68,20 @@ export interface UserGRPCServiceController {
   findMany(request: Empty): Promise<Users> | Observable<Users> | Users;
 
   create(request: RegisterDto): Promise<User> | Observable<User> | User;
+
+  forgotPassword(request: UserEmail): Promise<Empty> | Observable<Empty> | Empty;
 }
 
 export function UserGRPCServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["findOne", "findByEmail", "findByCredentials", "findMany", "create"];
+    const grpcMethods: string[] = [
+      "findOne",
+      "findByEmail",
+      "findByCredentials",
+      "findMany",
+      "create",
+      "forgotPassword",
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("UserGRPCService", method)(constructor.prototype[method], method, descriptor);

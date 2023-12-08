@@ -3,14 +3,17 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
-    "plugins": [{
-      "name": "@nestjs/swagger",
-      "options": {
-        "classValidatorShim": false,
-        "introspectComments": true
+    "plugins": [
+      {
+        "name": "@nestjs/swagger",
+        "options": {
+          "classValidatorShim": false,
+          "introspectComments": true
+        }
       }
-    }], 
+    ],
     "deleteOutDir": true,
-    "assets": [{"include": "../config/**/*yaml", "outDir": "./dist/config"}]
+    "assets": ["modules/email/templates/**/*"],
+    "watchAssets": true
   }
 }

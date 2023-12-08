@@ -8,6 +8,7 @@ service UserGRPCService {
   rpc FindByCredentials (UserCreadentials) returns (User) {}
   rpc FindMany (Empty) returns (Users) {}
   rpc Create (RegisterDto) returns (User) {}
+  rpc ForgotPassword (UserEmail) returns (Empty) {}
 }
 
 message Users {

@@ -1,7 +1,8 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import {
+  Empty,
   RegisterDto,
   User,
   UserCreadentials,
@@ -40,6 +41,15 @@ export class UserController implements UserGRPCServiceController {
 
   create(request: RegisterDto): Promise<User> | Observable<User> | User {
     return this.usersService.create(request);
+  }
+
+  @Post()
+  forgotPassword(
+    payload: UserEmail,
+  ): Promise<Empty> | Observable<Empty> | Empty {
+    console.log('payload1', payload);
+    const a: UserEmail = { email: 'phidv9855@gmail.com' };
+    return this.usersService.forgotPassword(a);
   }
 
   // @Post('avatar')

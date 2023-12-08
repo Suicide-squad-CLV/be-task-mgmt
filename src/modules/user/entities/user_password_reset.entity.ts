@@ -17,7 +17,7 @@ class UserPasswordResetEntity {
   token: string;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
-  created_at: Date;
+  createdAt: Date;
 }
 
 export default UserPasswordResetEntity;
