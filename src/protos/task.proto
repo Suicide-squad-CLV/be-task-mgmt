@@ -5,6 +5,7 @@ package task;
 service TaskGRPCService {
   rpc FindOne (TaskId) returns (GRPCTask);
   rpc FindMany (TaskFields) returns (GRPCTaskList);
+  rpc FindAllStatus (Empty) returns (GRPCStatusList);
 }
 
 message TaskId {
@@ -32,6 +33,10 @@ message GRPCTaskList {
 message GRPCStatus {
   string id = 1;
   string statusName = 2;
+}
+
+message GRPCStatusList {
+  repeated GRPCStatus statusList = 1;
 }
 
 message GRPCUser {
