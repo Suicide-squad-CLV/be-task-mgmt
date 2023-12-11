@@ -5,4 +5,6 @@ enum DeleteValue {
 
 const AUTHEN_PATH = '/auth/reset-password';
 
-export { DeleteValue, AUTHEN_PATH };
+const RESET_PWD_TIMEOOUT = 60;
+
+export { DeleteValue, AUTHEN_PATH, RESET_PWD_TIMEOOUT };

@@ -16,7 +16,11 @@ import { RpcException } from '@nestjs/microservices';
 import EmailService from '../email/email.service';
 import UserPasswordResetEntity from './entities/user_password_reset.entity';
 import { ConfigService } from '@nestjs/config';
-import { AUTHEN_PATH, DeleteValue } from 'src/common/constants';
+import {
+  AUTHEN_PATH,
+  DeleteValue,
+  RESET_PWD_TIMEOOUT,
+} from 'src/common/constants';
 import * as moment from 'moment';
 
 @Injectable()
@@ -124,7 +128,7 @@ export class UserService {
     const now = moment();
     if (
       moment(entityCheck?.createdAt)
-        .add(10, 'minutes')
+        .add(RESET_PWD_TIMEOOUT, 'minutes')
         .isBefore(now)
     ) {
       const token = this.generateRandomStr(30);
@@ -146,6 +150,7 @@ export class UserService {
         subject: '[TaskBan] Forgot password email',
         name: user.fullname,
         link: link,
+        minute: RESET_PWD_TIMEOOUT,
       });
     }
   }
