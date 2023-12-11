@@ -1,12 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
-  TaskGRPCServiceControllerMethods,
-  FindTasks,
-  TaskList,
+  TaskId,
+  TaskFields,
+  GRPCTask,
+  GRPCTaskList,
   TaskGRPCServiceController,
-  FindTaskId,
-  Task,
+  TaskGRPCServiceControllerMethods,
 } from 'src/protos/task';
 import { TaskService } from './task.service';
 import { Observable } from 'rxjs';
@@ -17,15 +17,16 @@ import { Observable } from 'rxjs';
 export class TaskController implements TaskGRPCServiceController {
   constructor(private readonly taskService: TaskService) {}
 
-  findOne(request: FindTaskId): Task | Observable<Task> | Promise<Task> {
+  findOne(
+    request: TaskId,
+  ): GRPCTask | Observable<GRPCTask> | Promise<GRPCTask> {
     console.log(request);
     throw new Error('Method not implemented.');
   }
 
   findMany(
-    request: FindTasks,
-  ): Promise<TaskList> | Observable<TaskList> | TaskList {
-    console.log('request', request);
-    return this.taskService.getAll(request);
+    request: TaskFields,
+  ): Promise<GRPCTaskList> | Observable<GRPCTaskList> | GRPCTaskList {
+    return this.taskService.getAllTasks(request);
   }
 }

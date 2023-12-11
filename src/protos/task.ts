@@ -4,39 +4,56 @@ import { Observable } from "rxjs";
 
 export const protobufPackage = "task";
 
-export interface FindTaskId {
+export interface TaskId {
   id: number;
 }
 
-export interface FindTasks {
-  /** string assignUserName = 2; */
+export interface TaskFields {
   title: string;
+  userId: string;
+  statusId: string;
 }
 
-export interface Task {
+export interface GRPCTask {
   id: number;
   taskTitle: string;
   taskDescription: string;
-  isDeleted: boolean;
-  assignUserId: string;
+  assignUser: GRPCUser | undefined;
+  status: GRPCStatus | undefined;
 }
 
-export interface TaskList {
-  tasks: Task[];
+export interface GRPCTaskList {
+  tasks: GRPCTask[];
+}
+
+export interface GRPCStatus {
+  id: string;
+  statusName: string;
+}
+
+export interface GRPCUser {
+  id: number;
+  fullname: string;
+  email: string;
+  avatar: string;
+  refreshToken: string;
+}
+
+export interface Empty {
 }
 
 export const TASK_PACKAGE_NAME = "task";
 
 export interface TaskGRPCServiceClient {
-  findOne(request: FindTaskId): Observable<Task>;
+  findOne(request: TaskId): Observable<GRPCTask>;
 
-  findMany(request: FindTasks): Observable<TaskList>;
+  findMany(request: TaskFields): Observable<GRPCTaskList>;
 }
 
 export interface TaskGRPCServiceController {
-  findOne(request: FindTaskId): Promise<Task> | Observable<Task> | Task;
+  findOne(request: TaskId): Promise<GRPCTask> | Observable<GRPCTask> | GRPCTask;
 
-  findMany(request: FindTasks): Promise<TaskList> | Observable<TaskList> | TaskList;
+  findMany(request: TaskFields): Promise<GRPCTaskList> | Observable<GRPCTaskList> | GRPCTaskList;
 }
 
 export function TaskGRPCServiceControllerMethods() {

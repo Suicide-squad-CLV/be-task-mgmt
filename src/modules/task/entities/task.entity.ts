@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import UserEntity from 'src/modules/user/entities/user.entity';
 import StatusEntity from './status.entity';
-import { Task } from 'src/protos/task';
+import { GRPCTask } from 'src/protos/task';
 
 @Entity('tasks')
 class TaskEntity {
@@ -65,13 +65,14 @@ class TaskEntity {
     Object.assign(this, partial);
   }
 
-  toGRPCTask(): Task {
+  toGRPCTask(): GRPCTask {
+    // Map TaskEntity to GRPCTask
     return {
       id: this.id,
       taskTitle: this.taskTitle,
       taskDescription: this.taskDescription || '',
-      isDeleted: this.isDeleted || false,
-      assignUserId: this.user ? this.user.id.toString() : '',
+      assignUser: this.user,
+      status: this.status,
     };
   }
 }
