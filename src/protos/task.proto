@@ -3,26 +3,43 @@ syntax = "proto3";
 package task;
 
 service TaskGRPCService {
-  rpc FindOne (FindTaskById) returns (Task);
-  rpc FindMany (FindTasks) returns (TaskList);
+  rpc FindOne (TaskId) returns (GRPCTask);
+  rpc FindMany (TaskFields) returns (GRPCTaskList);
 }
 
-message FindTaskById {
+message TaskId {
   int32 id = 1;
 }
 
-message FindTasks {
+message TaskFields {
   string title = 1;
+  string userId = 2;
+  string statusId = 3;
 }
 
-message Task {
+message GRPCTask {
   int32 id = 1;
   string taskTitle = 2;
   string taskDescription = 3;
-  bool isDeleted = 4;
-  string assignUserId = 5;
+  GRPCUser assignUser = 4;
+  GRPCStatus status = 5;
 }
 
-message TaskList {
-  repeated Task tasks = 1;
+message GRPCTaskList {
+  repeated GRPCTask tasks = 1;
 }
+
+message GRPCStatus {
+  string id = 1;
+  string statusName = 2;
+}
+
+message GRPCUser {
+  int32 id = 1;
+  string fullname = 2;
+  string email = 3;
+  string avatar = 4;
+  string refreshToken = 5;
+}
+
+message Empty {}

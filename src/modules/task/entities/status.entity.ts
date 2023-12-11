@@ -1,15 +1,10 @@
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import TaskEntity from './task.entity';
+import { GRPCStatus } from 'src/protos/task';
 
 @Entity('task_status')
 class StatusEntity {
-  @Column({
-    primary: true,
-    type: 'varchar',
-    length: 50,
-    name: 'code',
-    nullable: false,
-  })
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({
@@ -18,7 +13,7 @@ class StatusEntity {
     name: 'status_name',
     nullable: false,
   })
-  statusName: number;
+  statusName: string;
 
   @Column({
     type: 'boolean',
@@ -26,10 +21,18 @@ class StatusEntity {
     nullable: true,
     default: false,
   })
-  isDeleted: string;
+  isDeleted: boolean;
 
   @OneToMany(() => TaskEntity, (task) => task.status, { nullable: true })
   tasks?: TaskEntity[];
+
+  toGRPCStatus(): GRPCStatus {
+    // Map StatusEntity to GRPCStatus
+    return {
+      id: this.id,
+      statusName: this.statusName,
+    };
+  }
 }
 
 export default StatusEntity;
