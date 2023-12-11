@@ -31,6 +31,10 @@ export interface GRPCStatus {
   statusName: string;
 }
 
+export interface GRPCStatusList {
+  statusList: GRPCStatus[];
+}
+
 export interface GRPCUser {
   id: number;
   fullname: string;
@@ -47,17 +51,21 @@ export interface TaskGRPCServiceClient {
   findOne(request: TaskId): Observable<GRPCTask>;
 
   findMany(request: TaskFields): Observable<GRPCTaskList>;
+
+  findAllStatus(request: Empty): Observable<GRPCStatusList>;
 }
 
 export interface TaskGRPCServiceController {
   findOne(request: TaskId): Promise<GRPCTask> | Observable<GRPCTask> | GRPCTask;
 
   findMany(request: TaskFields): Promise<GRPCTaskList> | Observable<GRPCTaskList> | GRPCTaskList;
+
+  findAllStatus(request: Empty): Promise<GRPCStatusList> | Observable<GRPCStatusList> | GRPCStatusList;
 }
 
 export function TaskGRPCServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["findOne", "findMany"];
+    const grpcMethods: string[] = ["findOne", "findMany", "findAllStatus"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("TaskGRPCService", method)(constructor.prototype[method], method, descriptor);

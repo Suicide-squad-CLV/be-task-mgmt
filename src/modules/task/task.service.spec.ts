@@ -3,7 +3,7 @@ import { TaskService } from './task.service';
 import TaskEntity from './entities/task.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Task } from 'src/protos/task';
+import { GRPCTask } from 'src/protos/task';
 
 describe('TaskService', () => {
   let service: TaskService;
@@ -38,19 +38,65 @@ describe('TaskService', () => {
 
   describe('feature/query-all-tasks: Query all tasks feature', () => {
     it('should be able to return tasks having the task title keywords', async () => {
-      const taskTitle = 'Test';
+      const params = {
+        title: 'Test',
+        userId: '',
+        statusId: '',
+      };
       // Define condition for where clause based on FindTaskInfro value
       const condition: any = {};
-      condition.taskTitle = taskTitle;
+      condition.taskTitle = params.title;
 
       // Get tasks based on condition
       const tasks = await taskRepo.find(condition);
       if (tasks) {
         // Map TaskEntity to Task in GRPC Return
-        const result: Task[] = tasks.map((task: TaskEntity) =>
+        const result: GRPCTask[] = tasks.map((task: TaskEntity) =>
           task.toGRPCTask(),
         );
-        expect({ tasks: result }).toEqual(service.getAll({ title: taskTitle }));
+        expect({ tasks: result }).toEqual(service.getAllTasks(params));
+      }
+    });
+
+    it('should be able to return tasks having the user id', async () => {
+      const params = {
+        title: '',
+        userId: '3',
+        statusId: '',
+      };
+      // Define condition for where clause based on FindTaskInfro value
+      const condition: any = { user: {} };
+      condition.user.id = params.userId;
+
+      // Get tasks based on condition
+      const tasks = await taskRepo.find(condition);
+      if (tasks) {
+        // Map TaskEntity to Task in GRPC Return
+        const result: GRPCTask[] = tasks.map((task: TaskEntity) =>
+          task.toGRPCTask(),
+        );
+        expect({ tasks: result }).toEqual(service.getAllTasks(params));
+      }
+    });
+
+    it('should be able to return tasks having the status id', async () => {
+      const params = {
+        title: '',
+        userId: '',
+        statusId: '0df1c5c2-eae1-4378-a2d6-22f4979b4cf1',
+      };
+      // Define condition for where clause based on FindTaskInfro value
+      const condition: any = { status: {} };
+      condition.status.id = params.statusId;
+
+      // Get tasks based on condition
+      const tasks = await taskRepo.find(condition);
+      if (tasks) {
+        // Map TaskEntity to Task in GRPC Return
+        const result: GRPCTask[] = tasks.map((task: TaskEntity) =>
+          task.toGRPCTask(),
+        );
+        expect({ tasks: result }).toEqual(service.getAllTasks(params));
       }
     });
 
@@ -62,10 +108,10 @@ describe('TaskService', () => {
       const tasks = await taskRepo.find(condition);
       if (tasks) {
         // Map TaskEntity to Task in GRPC Return
-        const result: Task[] = tasks.map((task: TaskEntity) =>
+        const result: GRPCTask[] = tasks.map((task: TaskEntity) =>
           task.toGRPCTask(),
         );
-        expect({ tasks: result }).toEqual(service.getAll({} as any));
+        expect({ tasks: result }).toEqual(service.getAllTasks({} as any));
       }
     });
   });
