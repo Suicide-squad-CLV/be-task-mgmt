@@ -36,7 +36,6 @@ export interface GRPCUser {
   fullname: string;
   email: string;
   avatar: string;
-  refreshToken: string;
 }
 
 export interface Empty {

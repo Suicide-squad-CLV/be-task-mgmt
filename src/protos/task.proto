@@ -39,7 +39,6 @@ message GRPCUser {
   string fullname = 2;
   string email = 3;
   string avatar = 4;
-  string refreshToken = 5;
 }
 
 message Empty {}
