@@ -9,6 +9,7 @@ import {
   Empty,
   GRPCStatusList,
   GRPCStatus,
+  TaskId,
 } from 'src/protos/task';
 import StatusEntity from './entities/status.entity';
 
@@ -78,5 +79,26 @@ export class TaskService {
 
     // Throw error if there is no task
     throw new HttpException('Can not find tasks', HttpStatus.NOT_FOUND);
+  }
+
+  async getTask(request: TaskId): Promise<GRPCTask> {
+    const task = await this.taskRepository.findOne({
+      relations: {
+        status: true,
+        user: true,
+      },
+      where: {
+        id: request.id,
+        isDeleted: false,
+      },
+    });
+
+    if (task) {
+      // Map TaskEntity to GRPCTask
+      return task.toGRPCTask();
+    }
+
+    // Throw error if there is no task
+    throw new HttpException('Can not find task', HttpStatus.NOT_FOUND);
   }
 }

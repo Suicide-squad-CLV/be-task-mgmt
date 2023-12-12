@@ -25,16 +25,15 @@ export class TaskController implements TaskGRPCServiceController {
     return this.taskService.getAllStatus(request);
   }
 
-  findOne(
-    request: TaskId,
-  ): GRPCTask | Observable<GRPCTask> | Promise<GRPCTask> {
-    console.log(request);
-    throw new Error('Method not implemented.');
-  }
-
   findMany(
     request: TaskFields,
   ): Promise<GRPCTaskList> | Observable<GRPCTaskList> | GRPCTaskList {
     return this.taskService.getAllTasks(request);
+  }
+
+  findOne(
+    request: TaskId,
+  ): GRPCTask | Observable<GRPCTask> | Promise<GRPCTask> {
+    return this.taskService.getTask(request);
   }
 }
