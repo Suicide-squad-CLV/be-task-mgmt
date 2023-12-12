@@ -10,6 +10,7 @@ import {
   GRPCStatusList,
   GRPCStatus,
   TaskId,
+  NewTask,
 } from 'src/protos/task';
 import StatusEntity from './entities/status.entity';
 
@@ -22,10 +23,10 @@ export class TaskService {
     private statusRepository: Repository<StatusEntity>,
   ) {}
 
-  async getAllStatus(request: Empty): Promise<GRPCStatusList> {
+  async getAllStatus(payload: Empty): Promise<GRPCStatusList> {
     const condition: any = {
       isDeleted: false,
-      ...request,
+      ...payload,
     };
     const statusList = await this.statusRepository.find({
       where: condition,
@@ -43,21 +44,21 @@ export class TaskService {
     throw new HttpException('Can not find tasks', HttpStatus.NOT_FOUND);
   }
 
-  async getAllTasks(request: TaskFields): Promise<GRPCTaskList> {
-    // Define condition for where clause based on request value
+  async getAllTasks(payload: TaskFields): Promise<GRPCTaskList> {
+    // Define condition for where clause based on payload value
     const condition: any = {
       isDeleted: false,
       user: {},
       status: {},
     };
-    if (request.title) {
-      condition.taskTitle = ILike(`%${request.title}%`);
+    if (payload.title) {
+      condition.taskTitle = ILike(`%${payload.title}%`);
     }
-    if (request.userId) {
-      condition.user.id = request.userId;
+    if (payload.userId) {
+      condition.user.id = payload.userId;
     }
-    if (request.statusId) {
-      condition.status.id = request.statusId;
+    if (payload.statusId) {
+      condition.status.id = payload.statusId;
     }
 
     // Query all tasks that satisfy the condition
@@ -81,14 +82,14 @@ export class TaskService {
     throw new HttpException('Can not find tasks', HttpStatus.NOT_FOUND);
   }
 
-  async getTask(request: TaskId): Promise<GRPCTask> {
+  async getTask(payload: TaskId): Promise<GRPCTask> {
     const task = await this.taskRepository.findOne({
       relations: {
         status: true,
         user: true,
       },
       where: {
-        id: request.id,
+        id: payload.id,
         isDeleted: false,
       },
     });
@@ -100,5 +101,38 @@ export class TaskService {
 
     // Throw error if there is no task
     throw new HttpException('Can not find task', HttpStatus.NOT_FOUND);
+  }
+
+  async createTask(payload: NewTask): Promise<TaskId> {
+    const insert = await this.taskRepository
+      .createQueryBuilder()
+      .insert()
+      .into(TaskEntity)
+      .values([
+        {
+          taskTitle: payload.title,
+          taskDescription: payload.description,
+          user: {
+            id: payload.assignUserId,
+          },
+          status: {
+            id: payload.statusId,
+          },
+        },
+      ])
+      .returning('*')
+      .execute();
+
+    if (insert.generatedMaps.length > 0) {
+      // Return task data
+      const returnData = insert.generatedMaps[0];
+      // returnData.user = {};
+      // returnData.status = {};
+      const task = new TaskEntity(returnData);
+      return { id: task.id };
+    }
+
+    // Throw error if there is no task
+    throw new HttpException('Can not create a task', HttpStatus.NOT_FOUND);
   }
 }
