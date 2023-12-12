@@ -6,6 +6,7 @@ service TaskGRPCService {
   rpc FindOne (TaskId) returns (GRPCTask);
   rpc FindMany (TaskFields) returns (GRPCTaskList);
   rpc FindAllStatus (Empty) returns (GRPCStatusList);
+  rpc CreateTask (NewTask) returns (TaskId);
 }
 
 message TaskId {
@@ -14,8 +15,15 @@ message TaskId {
 
 message TaskFields {
   string title = 1;
-  string userId = 2;
+  int32 userId = 2;
   string statusId = 3;
+}
+
+message NewTask {
+  string title = 1;
+  string description = 2;
+  string statusId = 3;
+  int32 assignUserId = 4;
 }
 
 message GRPCTask {
