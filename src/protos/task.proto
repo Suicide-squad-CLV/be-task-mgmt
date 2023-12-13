@@ -41,6 +41,8 @@ message GRPCTaskList {
 message GRPCStatus {
   string id = 1;
   string statusName = 2;
+  string backgroundHexColor = 3;
+  string textHexColor = 4;
 }
 
 message GRPCStatusList {

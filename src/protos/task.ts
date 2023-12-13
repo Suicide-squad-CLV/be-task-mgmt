@@ -36,6 +36,8 @@ export interface GRPCTaskList {
 export interface GRPCStatus {
   id: string;
   statusName: string;
+  backgroundHexColor: string;
+  textHexColor: string;
 }
 
 export interface GRPCStatusList {

@@ -30,6 +30,9 @@ export class TaskService {
     };
     const statusList = await this.statusRepository.find({
       where: condition,
+      order: {
+        createdAt: 'ASC',
+      },
     });
 
     if (statusList) {
@@ -68,6 +71,11 @@ export class TaskService {
         user: true,
       },
       where: condition,
+      order: {
+        status: {
+          createdAt: 'ASC',
+        },
+      },
     });
 
     if (tasks) {
