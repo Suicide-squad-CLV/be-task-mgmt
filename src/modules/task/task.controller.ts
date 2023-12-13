@@ -9,6 +9,7 @@ import {
   TaskGRPCServiceControllerMethods,
   Empty,
   GRPCStatusList,
+  NewTask,
 } from 'src/protos/task';
 import { TaskService } from './task.service';
 import { Observable } from 'rxjs';
@@ -20,21 +21,24 @@ export class TaskController implements TaskGRPCServiceController {
   constructor(private readonly taskService: TaskService) {}
 
   findAllStatus(
-    request: Empty,
+    payload: Empty,
   ): GRPCStatusList | Promise<GRPCStatusList> | Observable<GRPCStatusList> {
-    return this.taskService.getAllStatus(request);
-  }
-
-  findOne(
-    request: TaskId,
-  ): GRPCTask | Observable<GRPCTask> | Promise<GRPCTask> {
-    console.log(request);
-    throw new Error('Method not implemented.');
+    return this.taskService.getAllStatus(payload);
   }
 
   findMany(
-    request: TaskFields,
+    payload: TaskFields,
   ): Promise<GRPCTaskList> | Observable<GRPCTaskList> | GRPCTaskList {
-    return this.taskService.getAllTasks(request);
+    return this.taskService.getAllTasks(payload);
+  }
+
+  findOne(
+    payload: TaskId,
+  ): GRPCTask | Observable<GRPCTask> | Promise<GRPCTask> {
+    return this.taskService.getTask(payload);
+  }
+
+  createTask(payload: NewTask): TaskId | Promise<TaskId> | Observable<TaskId> {
+    return this.taskService.createTask(payload);
   }
 }
