@@ -1,4 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import TaskEntity from './task.entity';
 import { GRPCStatus } from 'src/protos/task';
 
@@ -23,6 +29,32 @@ class StatusEntity {
   })
   isDeleted: boolean;
 
+  @Column({
+    type: 'varchar',
+    length: 8,
+    name: 'background_hex_color',
+    nullable: true,
+    default: '#ffffff', // white color
+  })
+  backgroundHexColor: string;
+
+  @Column({
+    type: 'varchar',
+    length: 8,
+    name: 'text_hex_color',
+    nullable: true,
+    default: '#000000', // black color
+  })
+  textHexColor: string;
+
+  @CreateDateColumn({
+    type: 'timestamp without time zone',
+    name: 'create_date',
+    nullable: false,
+    default: new Date(),
+  })
+  createdAt?: Date;
+
   @OneToMany(() => TaskEntity, (task) => task.status, { nullable: true })
   tasks?: TaskEntity[];
 
@@ -31,6 +63,8 @@ class StatusEntity {
     return {
       id: this.id,
       statusName: this.statusName,
+      backgroundHexColor: this.backgroundHexColor,
+      textHexColor: this.textHexColor,
     };
   }
 }
