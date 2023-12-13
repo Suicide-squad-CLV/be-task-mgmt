@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const config: ConfigService = new ConfigService();
 
-const dbConfig: DataSourceOptions = {
+export const dbConfig: DataSourceOptions = {
   type: 'postgres',
   host: config.get<string>('DATABASE_HOST'),
   port: config.get<number>('DATABASE_PORT'),
@@ -21,7 +21,7 @@ const dbConfig: DataSourceOptions = {
   //   migrationsDir: 'src/migrations',
   // },
   logging: true,
-  synchronize: false,
+  synchronize: config.get<boolean>('DATABASE_SYNC'),
 };
 
 export default new DataSource(dbConfig);

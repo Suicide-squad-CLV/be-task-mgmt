@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import UserEntity from 'src/modules/user/entities/user.entity';
+import UserEntity from '../../user/entities/user.entity';
 import StatusEntity from './status.entity';
 import { GRPCTask } from 'src/protos/task';
 
@@ -70,7 +70,7 @@ class TaskEntity {
     return {
       id: this.id,
       taskTitle: this.taskTitle,
-      taskDescription: this.taskDescription || '',
+      taskDescription: this.taskDescription ?? '',
       assignUser: this.user,
       status: this.status,
     };

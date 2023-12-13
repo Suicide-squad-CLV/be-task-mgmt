@@ -1,5 +1,5 @@
-import { DeleteValue } from 'src/common/constants';
-import TaskEntity from 'src/modules/task/entities/task.entity';
+import { DeleteValue } from '../../../common/constants';
+import TaskEntity from '../../task/entities/task.entity';
 import { User } from 'src/protos/user';
 import {
   Column,
