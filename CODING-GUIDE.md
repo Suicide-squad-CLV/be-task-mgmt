@@ -19,10 +19,10 @@
 
 4. Seeding the database
 
-   _We used `typeorm-seeding` as the package for helping to seeding our data_
+   _We used `typeorm-extension` as the package for helping to seeding our data_
 
    ```
-   yarn migrate:seed
+   yarn seed:run
    ```
 
 ## Serve your application
