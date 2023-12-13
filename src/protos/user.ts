@@ -8,6 +8,11 @@ export interface Users {
   users: User[];
 }
 
+export interface AvatarPayload {
+  id: number;
+  avatar: string;
+}
+
 export interface PasswordPayload {
   token: string;
   password: string;
@@ -70,6 +75,8 @@ export interface UserGRPCServiceClient {
   removeUser(request: UserId): Observable<Response>;
 
   updatePassword(request: PasswordPayload): Observable<Response>;
+
+  updateAvatar(request: AvatarPayload): Observable<User>;
 }
 
 export interface UserGRPCServiceController {
@@ -88,6 +95,8 @@ export interface UserGRPCServiceController {
   removeUser(request: UserId): Promise<Response> | Observable<Response> | Response;
 
   updatePassword(request: PasswordPayload): Promise<Response> | Observable<Response> | Response;
+
+  updateAvatar(request: AvatarPayload): Promise<User> | Observable<User> | User;
 }
 
 export function UserGRPCServiceControllerMethods() {
@@ -101,6 +110,7 @@ export function UserGRPCServiceControllerMethods() {
       "forgotPassword",
       "removeUser",
       "updatePassword",
+      "updateAvatar",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

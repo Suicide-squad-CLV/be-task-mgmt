@@ -3,7 +3,7 @@ enum DeleteValue {
   YES = 'Y',
 }
 
-const AUTHEN_PATH = '/auth/reset-password';
+const AUTHEN_PATH = '/auth/new-password';
 
 const RESET_PWD_TIMEOOUT = 60;
 

@@ -11,10 +11,16 @@ service UserGRPCService {
   rpc ForgotPassword (UserEmail) returns (Empty) {}
   rpc RemoveUser (UserId) returns (Response) {}
   rpc UpdatePassword (PasswordPayload) returns (Response) {}
+  rpc UpdateAvatar (AvatarPayload) returns (User) {}
 }
 
 message Users {
   repeated User users = 1;
+}
+
+message AvatarPayload {
+  int32 id = 1;
+  string avatar = 2;
 }
 
 message PasswordPayload {

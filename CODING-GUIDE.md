@@ -12,8 +12,17 @@
    ```
 
 3. Run following command
+
    ```
    yarn migrate:run
+   ```
+
+4. Seeding the database
+
+   _We used `typeorm-seeding` as the package for helping to seeding our data_
+
+   ```
+   yarn migrate:seed
    ```
 
 ## Serve your application

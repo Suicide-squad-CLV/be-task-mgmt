@@ -1,8 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import UserEntity from './entities/user.entity';
 import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+  AvatarPayload,
   PasswordPayload,
   RegisterDto,
   User,
@@ -45,10 +46,7 @@ export class UserService {
       return user.getUserProto();
     }
 
-    throw new HttpException(
-      'User with this email does not exist',
-      HttpStatus.NOT_FOUND,
-    );
+    throw new RpcException('User with this email does not exist');
   }
 
   async findByCredentials(payload: UserCreadentials) {
@@ -127,9 +125,11 @@ export class UserService {
     // check the latest email have to within 10 minutes from now
     const now = moment();
     if (
-      moment(entityCheck?.createdAt)
-        .add(RESET_PWD_TIMEOOUT, 'minutes')
-        .isBefore(now)
+      !entityCheck ||
+      (entityCheck &&
+        moment(entityCheck?.createdAt)
+          .add(RESET_PWD_TIMEOOUT, 'minutes')
+          .isBefore(now))
     ) {
       const token = this.generateRandomStr(30);
       const newPwdReset = await this.passwordRepository.create({
@@ -207,6 +207,24 @@ export class UserService {
       success: true,
       message: 'Password updated successfully',
     };
+  }
+
+  async updateAvatar(payload: AvatarPayload) {
+    const user = await this.usersRepository.findOne({
+      where: { id: payload.id, isDeleted: DeleteValue.NO },
+    });
+    if (!user) {
+      throw new RpcException('User is not found');
+    }
+
+    await this.usersRepository.update(
+      { id: user.id },
+      {
+        avatar: payload.avatar,
+      },
+    );
+
+    return user.getUserProto();
   }
 
   private generateRandomStr(length: number): string {

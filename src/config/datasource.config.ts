@@ -20,7 +20,7 @@ const dbConfig: DataSourceOptions = {
   // cli: {
   //   migrationsDir: 'src/migrations',
   // },
-  // logging: true,
+  logging: true,
   synchronize: false,
 };
 
