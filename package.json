@@ -24,7 +24,8 @@
     "migrate:generate-option": "npm run typeorm:cli migration:generate -- --dataSource ./src/config/datasource.config.ts",
     "migrate:run": "npm run typeorm:cli migration:run -- -d ./src/config/datasource.config.ts",
     "migrate:revert": "npm run typeorm:cli migration:revert",
-    "generate:proto": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto.cmd --proto_path=./src/protos --ts_proto_out=./src/protos ./src/protos/*.proto --ts_proto_opt=fileSuffix= --ts_proto_opt=useDate=true,nestJs=true"
+    "generate:proto": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto.cmd --proto_path=./src/protos --ts_proto_out=./src/protos ./src/protos/*.proto --ts_proto_opt=fileSuffix= --ts_proto_opt=useDate=true,nestJs=true",
+    "seed:run": "ts-node ./node_modules/typeorm-extension/dist/cli/index.js seed -d ./src/config/seedorm.config.ts"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.9.12",
@@ -53,7 +54,8 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "ts-proto": "^1.165.0",
-    "typeorm": "^0.3.17"
+    "typeorm": "^0.3.17",
+    "typeorm-extension": "^2.1.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
