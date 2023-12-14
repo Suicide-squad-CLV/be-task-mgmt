@@ -217,14 +217,22 @@ export class UserService {
       throw new RpcException('User is not found');
     }
 
-    await this.usersRepository.update(
-      { id: user.id },
-      {
-        avatar: payload.avatar,
-      },
-    );
+    const newUser = await this.usersRepository.save({
+      ...user,
+      avatar: payload.avatar,
+    });
 
-    return user.getUserProto();
+    return {
+      id: newUser.id,
+      fullname: newUser.fullname,
+      email: newUser.email,
+      password: newUser.password ?? '',
+      avatar: newUser.avatar,
+      refreshToken: newUser.refreshToken,
+      isDeleted: newUser.isDeleted === DeleteValue.NO,
+      createdAt: newUser.createdAt.toString(),
+      updatedAt: newUser.updatedAt.toString(),
+    };
   }
 
   private generateRandomStr(length: number): string {
