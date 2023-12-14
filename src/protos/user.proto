@@ -6,7 +6,7 @@ service UserGRPCService {
   rpc FindOne (UserId) returns (User) {}
   rpc FindByEmail (UserEmail) returns (User) {}
   rpc FindByCredentials (UserCreadentials) returns (User) {}
-  rpc FindMany (Empty) returns (Users) {}
+  rpc FindMany (UserEmail) returns (Users) {}
   rpc Create (RegisterDto) returns (User) {}
   rpc ForgotPassword (UserEmail) returns (Empty) {}
   rpc RemoveUser (UserId) returns (Response) {}

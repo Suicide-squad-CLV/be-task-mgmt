@@ -66,7 +66,7 @@ export interface UserGRPCServiceClient {
 
   findByCredentials(request: UserCreadentials): Observable<User>;
 
-  findMany(request: Empty): Observable<Users>;
+  findMany(request: UserEmail): Observable<Users>;
 
   create(request: RegisterDto): Observable<User>;
 
@@ -86,7 +86,7 @@ export interface UserGRPCServiceController {
 
   findByCredentials(request: UserCreadentials): Promise<User> | Observable<User> | User;
 
-  findMany(request: Empty): Promise<Users> | Observable<Users> | Users;
+  findMany(request: UserEmail): Promise<Users> | Observable<Users> | Users;
 
   create(request: RegisterDto): Promise<User> | Observable<User> | User;
 

@@ -38,8 +38,8 @@ export class UserController implements UserGRPCServiceController {
     return this.usersService.findByCredentials(payload);
   }
 
-  findMany(): Promise<Users> | Observable<Users> | Users {
-    return this.usersService.getUsers();
+  findMany(payload: UserEmail): Promise<Users> | Observable<Users> | Users {
+    return this.usersService.getUsers(payload);
   }
 
   create(request: RegisterDto): Promise<User> | Observable<User> | User {
