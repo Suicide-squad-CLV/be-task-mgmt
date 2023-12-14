@@ -10,6 +10,7 @@ import {
   Empty,
   GRPCStatusList,
   NewTask,
+  UpdatedTask,
 } from 'src/protos/task';
 import { TaskService } from './task.service';
 import { Observable } from 'rxjs';
@@ -40,5 +41,11 @@ export class TaskController implements TaskGRPCServiceController {
 
   createTask(payload: NewTask): TaskId | Promise<TaskId> | Observable<TaskId> {
     return this.taskService.createTask(payload);
+  }
+
+  updateTask(
+    payload: UpdatedTask,
+  ): TaskId | Promise<TaskId> | Observable<TaskId> {
+    return this.taskService.updateTask(payload);
   }
 }
