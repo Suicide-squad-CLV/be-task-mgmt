@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import UserEntity from './entities/user.entity';
-import { In, Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   AvatarPayload,
@@ -70,10 +70,13 @@ export class UserService {
     });
   }
 
-  async getUsers() {
+  async getUsers(payload: UserEmail) {
     const response = await this.usersRepository
       .find({
-        where: { isDeleted: DeleteValue.NO },
+        where: [
+          { fullname: ILike(`%${payload.email}%`), isDeleted: DeleteValue.NO },
+          { email: ILike(`%${payload.email}%`), isDeleted: DeleteValue.NO },
+        ],
       })
       .then((users) => users.map((user) => user.getUserProto()));
     return { users: response };
