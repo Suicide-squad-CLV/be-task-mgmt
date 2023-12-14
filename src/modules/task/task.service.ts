@@ -11,6 +11,7 @@ import {
   GRPCStatus,
   TaskId,
   NewTask,
+  UpdatedTask,
 } from 'src/protos/task';
 import StatusEntity from './entities/status.entity';
 
@@ -142,5 +143,50 @@ export class TaskService {
 
     // Throw error if there is no task
     throw new HttpException('Can not create a task', HttpStatus.NOT_FOUND);
+  }
+
+  async updateTask(payload: UpdatedTask): Promise<TaskId> {
+    console.log(payload);
+    const updatedData: any = {};
+
+    if (payload.title) {
+      updatedData.taskTitle = payload.title;
+    }
+    if (payload.description) {
+      updatedData.taskDescription = payload.description;
+    }
+    if (payload.statusId) {
+      updatedData.status = {
+        id: payload.statusId,
+      };
+    }
+    if (payload.assignUserId) {
+      updatedData.user = {
+        id: payload.assignUserId,
+      };
+    }
+
+    console.log(updatedData);
+
+    const update = await this.taskRepository
+      .createQueryBuilder()
+      .update(TaskEntity)
+      .set(updatedData)
+      .where('id = :id', { id: payload.taskId })
+      .returning('*')
+      .execute();
+
+    console.log(update);
+    if (update.raw.length > 0) {
+      // Return task data
+      const returnData = update.raw[0];
+      // returnData.user = {};
+      // returnData.status = {};
+      const task = new TaskEntity(returnData);
+      return { id: task.id };
+    }
+
+    // Throw error if there is no task
+    throw new HttpException('Can not update a task', HttpStatus.NOT_FOUND);
   }
 }
