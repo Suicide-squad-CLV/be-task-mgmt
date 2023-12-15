@@ -50,19 +50,16 @@ export class TaskService {
 
   async getAllTasks(payload: TaskFields): Promise<GRPCTaskList> {
     // Define condition for where clause based on payload value
-    const condition: any = {
+    const commonCon: any = {
       isDeleted: false,
       user: {},
       status: {},
     };
-    if (payload.title) {
-      condition.taskTitle = ILike(`%${payload.title}%`);
-    }
     if (payload.userId) {
-      condition.user.id = payload.userId;
+      commonCon.user.id = payload.userId;
     }
     if (payload.statusId) {
-      condition.status.id = payload.statusId;
+      commonCon.status.id = payload.statusId;
     }
 
     // Query all tasks that satisfy the condition
@@ -71,7 +68,16 @@ export class TaskService {
         status: true,
         user: true,
       },
-      where: condition,
+      where: [
+        {
+          ...commonCon,
+          taskTitle: ILike(`%${payload.title ?? ''}%`),
+        },
+        {
+          ...commonCon,
+          taskDescription: ILike(`%${payload.title ?? ''}%`),
+        },
+      ],
       order: {
         status: {
           createdAt: 'ASC',
