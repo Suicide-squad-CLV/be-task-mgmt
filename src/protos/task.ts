@@ -27,6 +27,7 @@ export interface UpdatedTask {
   description: string;
   statusId: string;
   assignUserId: number;
+  deleteFlag?: string | undefined;
 }
 
 export interface GRPCTask {
@@ -53,7 +54,7 @@ export interface GRPCStatusList {
 }
 
 export interface GRPCUser {
-  id: number;
+  id?: number | undefined;
   fullname: string;
   email: string;
   avatar: string;
