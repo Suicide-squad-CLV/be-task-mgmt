@@ -34,7 +34,7 @@ export interface GRPCTask {
   id: number;
   taskTitle: string;
   taskDescription: string;
-  assignUser: GRPCUser | undefined;
+  assignUser: GRPCAssignee | undefined;
   status: GRPCStatus | undefined;
 }
 
@@ -54,10 +54,17 @@ export interface GRPCStatusList {
 }
 
 export interface GRPCUser {
-  id?: number | undefined;
+  id: number;
   fullname: string;
   email: string;
   avatar: string;
+}
+
+export interface GRPCAssignee {
+  id?: number | undefined;
+  fullname?: string | undefined;
+  email?: string | undefined;
+  avatar?: string | undefined;
 }
 
 export interface Empty {

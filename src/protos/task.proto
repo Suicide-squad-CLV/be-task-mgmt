@@ -40,7 +40,7 @@ message GRPCTask {
   int32 id = 1;
   string taskTitle = 2;
   string taskDescription = 3;
-  GRPCUser assignUser = 4;
+  GRPCAssignee assignUser = 4;
   GRPCStatus status = 5;
 }
 
@@ -60,10 +60,17 @@ message GRPCStatusList {
 }
 
 message GRPCUser {
-  optional int32 id = 1;
+  int32 id = 1;
   string fullname = 2;
   string email = 3;
   string avatar = 4;
+}
+
+message GRPCAssignee {
+  optional int32 id = 1;
+  optional string fullname = 2;
+  optional string email = 3;
+  optional string avatar = 4;
 }
 
 message Empty {}
