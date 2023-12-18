@@ -171,6 +171,9 @@ export class TaskService {
         id: payload.assignUserId,
       };
     }
+    if (payload.deleteFlag) {
+      updatedData.isDeleted = payload.deleteFlag;
+    }
 
     console.log(updatedData);
 
