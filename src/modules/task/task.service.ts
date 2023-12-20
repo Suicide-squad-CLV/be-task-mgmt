@@ -48,7 +48,7 @@ export class TaskService {
     throw new HttpException('Can not find tasks', HttpStatus.NOT_FOUND);
   }
 
-  async getAllTasks(payload: TaskFields): Promise<GRPCTaskList> {
+  async getAllTasks(payload: Partial<TaskFields>): Promise<GRPCTaskList> {
     // Define condition for where clause based on payload value
     const commonCon: any = {
       isDeleted: false,
@@ -118,7 +118,7 @@ export class TaskService {
     throw new HttpException('Can not find task', HttpStatus.NOT_FOUND);
   }
 
-  async createTask(payload: NewTask): Promise<TaskId> {
+  async createTask(payload: Partial<NewTask>): Promise<TaskId> {
     const insert = await this.taskRepository
       .createQueryBuilder()
       .insert()
