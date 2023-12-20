@@ -12,7 +12,7 @@ import {
   UserId,
 } from 'src/protos/user';
 import * as bcrypt from 'bcrypt';
-import PostgresErrorCode from 'src/database/postgres-error.enum';
+import PostgresErrorCode from 'src/infrastructure/config/postgres-error.enum';
 import { RpcException } from '@nestjs/microservices';
 import EmailService from '../email/email.service';
 import UserPasswordResetEntity from './entities/user_password_reset.entity';
