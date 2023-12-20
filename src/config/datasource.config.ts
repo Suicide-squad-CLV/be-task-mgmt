@@ -14,7 +14,7 @@ export const dbConfig: DataSourceOptions = {
   username: config.get<string>('DATABASE_USERNAME'),
   password: config.get<string>('DATABASE_PASSWORD'),
   entities: ['dist/**/*.entity{.ts,.js}'],
-  migrations: ['./src/migrations/*{.ts,.js}'],
+  migrations: ['./src/databases/migrations/*{.ts,.js}'],
   // migrationsRun: true,
   // migrationsTableName: 'typeorm_migrations',
   // cli: {
