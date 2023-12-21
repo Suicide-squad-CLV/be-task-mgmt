@@ -9,9 +9,17 @@ export class TaskStatusSeeder implements Seeder {
     const data: Partial<StatusEntity>[] = [];
 
     statuses.forEach((status) => {
-      data.push({
-        statusName: status,
-      });
+      if (status === 'Archived') {
+        data.push({
+          statusName: status,
+          persisted: false,
+        });
+      } else {
+        data.push({
+          statusName: status,
+          persisted: true,
+        });
+      }
     });
 
     const newUserPromises = data.map(async (statusData) =>

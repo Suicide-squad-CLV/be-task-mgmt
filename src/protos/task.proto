@@ -53,6 +53,7 @@ message GRPCStatus {
   string statusName = 2;
   string backgroundHexColor = 3;
   string textHexColor = 4;
+  optional bool persisted = 5;
 }
 
 message GRPCStatusList {

@@ -47,6 +47,7 @@ export interface GRPCStatus {
   statusName: string;
   backgroundHexColor: string;
   textHexColor: string;
+  persisted?: boolean | undefined;
 }
 
 export interface GRPCStatusList {

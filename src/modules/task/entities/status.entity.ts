@@ -55,6 +55,12 @@ class StatusEntity {
   })
   createdAt?: Date;
 
+  @Column({
+    comment: 'Allow to delete data',
+    default: false,
+  })
+  persisted?: boolean;
+
   @OneToMany(() => TaskEntity, (task) => task.status, { nullable: true })
   tasks?: TaskEntity[];
 
@@ -65,6 +71,7 @@ class StatusEntity {
       statusName: this.statusName,
       backgroundHexColor: this.backgroundHexColor,
       textHexColor: this.textHexColor,
+      persisted: this.persisted ?? false,
     };
   }
 }
