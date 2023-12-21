@@ -39,3 +39,4 @@ yarn.lock
 
 .env
 .env.local
+src/coverage
