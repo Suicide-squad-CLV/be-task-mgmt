@@ -119,7 +119,7 @@ export class TaskService {
     }
 
     // Throw error if there is no task
-    throw new HttpException('Can not find task', HttpStatus.NOT_FOUND);
+    throw new HttpException('Can not find a task', HttpStatus.NOT_FOUND);
   }
 
   async createTask(payload: Partial<NewTask>): Promise<TaskId> {
@@ -176,7 +176,23 @@ export class TaskService {
       };
     }
     if (payload.deleteFlag) {
-      updatedData.isDeleted = payload.deleteFlag;
+      const isPersisted = await this.taskRepository.findOne({
+        select: {
+          status: {
+            persisted: true,
+          },
+        },
+        relations: {
+          status: true,
+        },
+        where: {
+          id: payload.taskId,
+          isDeleted: false,
+        },
+      });
+      if (!isPersisted) {
+        updatedData.isDeleted = payload.deleteFlag;
+      }
     }
 
     console.log(updatedData);
