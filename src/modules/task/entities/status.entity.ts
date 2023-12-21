@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import TaskEntity from './task.entity';
-import { GRPCStatus } from 'src/protos/task';
 
 @Entity('task_status')
 class StatusEntity {
@@ -63,17 +62,6 @@ class StatusEntity {
 
   @OneToMany(() => TaskEntity, (task) => task.status, { nullable: true })
   tasks?: TaskEntity[];
-
-  toGRPCStatus(): GRPCStatus {
-    // Map StatusEntity to GRPCStatus
-    return {
-      id: this.id,
-      statusName: this.statusName,
-      backgroundHexColor: this.backgroundHexColor,
-      textHexColor: this.textHexColor,
-      persisted: this.persisted ?? false,
-    };
-  }
 }
 
 export default StatusEntity;

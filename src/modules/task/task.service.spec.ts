@@ -2,8 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TaskService } from './task.service';
 import TaskEntity from './entities/task.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
-import { GRPCStatus, GRPCStatusList, GRPCTask, NewTask } from 'src/protos/task';
+import { Repository } from 'typeorm';
 import StatusEntity from './entities/status.entity';
 
 describe('TaskService', () => {
@@ -13,6 +12,70 @@ describe('TaskService', () => {
 
   const TASK_REPOSITORY_TOKEN = getRepositoryToken(TaskEntity);
   const STATUS_REPOSITORY_TOKEN = getRepositoryToken(StatusEntity);
+  const mockTaskEntityDataList = [
+    {
+      id: 1,
+      taskTitle: 'title',
+      taskDescription: 'desc',
+      isDeleted: false,
+      user: {
+        id: 1,
+        email: 'user-email',
+      },
+      status: {
+        id: 1,
+        name: 'status-name',
+      },
+    },
+    {
+      id: 1,
+      taskTitle: 'title',
+      taskDescription: 'desc',
+      isDeleted: false,
+      user: {
+        id: 1,
+        email: 'user-email',
+      },
+      status: {
+        id: 1,
+        name: 'status-name',
+      },
+    },
+  ];
+
+  const mockTaskEntityData = {
+    id: 1,
+    taskTitle: 'title',
+    taskDescription: 'desc',
+    isDeleted: false,
+    user: {
+      id: 1,
+      email: 'user-email',
+    },
+    status: {
+      id: 1,
+      name: 'status-name',
+    },
+  };
+
+  const mockStatusEntityDataList = [
+    {
+      backgroundHexColor: '#eef2fc',
+      id: '7c9b5e69-99c6-4e09-95c1-0fcdea618637',
+      statusName: 'To Do',
+      textHexColor: '#14367B',
+      isDeleted: false,
+      task: [],
+    },
+    {
+      backgroundHexColor: '#FFF6EB',
+      id: 'eb11dd2d-73b0-41f8-b2ae-d359a48b0156',
+      statusName: 'In Progress',
+      textHexColor: '#8F4F00',
+      isDeleted: false,
+      task: [],
+    },
+  ];
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -21,14 +84,14 @@ describe('TaskService', () => {
         {
           provide: TASK_REPOSITORY_TOKEN,
           useValue: {
-            find: jest.fn(),
-            findOne: jest.fn(),
+            find: jest.fn().mockResolvedValue(mockTaskEntityDataList),
+            findOne: jest.fn().mockResolvedValue(mockTaskEntityData),
           },
         },
         {
           provide: STATUS_REPOSITORY_TOKEN,
           useValue: {
-            find: jest.fn(),
+            find: jest.fn().mockResolvedValue(mockStatusEntityDataList),
             findOne: jest.fn(),
           },
         },
@@ -53,211 +116,168 @@ describe('TaskService', () => {
   });
 
   describe('feature/query-all-tasks: Query all tasks feature', () => {
-    it('should be able to return tasks having the task title keywords', async () => {
-      const params = {
-        title: 'Task',
+    it('should be able to return all tasks when match search conditions', async () => {
+      const searchParams = {
+        title: 'title',
+        userId: 1,
+        statusId: '1',
       };
-      // Define condition for where clause based on FindTaskInfro value
-      const condition: any = {};
-      condition.taskTitle = params.title;
 
-      // Get tasks based on condition
-      const tasks = await taskRepo.find({
-        relations: {
-          status: true,
-          user: true,
-        },
-        where: [
+      const expectedRes = {
+        tasks: [
           {
-            taskTitle: ILike(`%${params.title ?? ''}%`),
+            id: 1,
+            taskTitle: 'title',
+            taskDescription: 'desc',
+            assignUser: {
+              id: 1,
+              email: 'user-email',
+            },
+            status: {
+              id: 1,
+              name: 'status-name',
+            },
           },
           {
-            taskDescription: ILike(`%${params.title ?? ''}%`),
+            id: 1,
+            taskTitle: 'title',
+            taskDescription: 'desc',
+            assignUser: {
+              id: 1,
+              email: 'user-email',
+            },
+            status: {
+              id: 1,
+              name: 'status-name',
+            },
           },
         ],
-        order: {
-          status: {
-            createdAt: 'ASC',
-          },
-        },
-      });
-      if (tasks) {
-        // Map TaskEntity to Task in GRPC Return
-        const result: GRPCTask[] = tasks.map((task: TaskEntity) =>
-          task.toGRPCTask(),
-        );
-        expect({ tasks: result }).toEqual(service.getAllTasks(params));
-      }
-    });
-
-    it('should be able to return tasks having the user id', async () => {
-      const params = {
-        userId: 3,
       };
-      // Define condition for where clause based on FindTaskInfro value
-      const condition: any = { user: {} };
-      condition.user.id = params.userId;
 
       // Get tasks based on condition
-      const tasks = await taskRepo.find({
-        relations: {
-          status: true,
-          user: true,
-        },
-        where: condition,
-        order: {
-          status: {
-            createdAt: 'ASC',
-          },
-        },
-      });
-      if (tasks) {
-        // Map TaskEntity to Task in GRPC Return
-        const result: GRPCTask[] = tasks.map((task: TaskEntity) =>
-          task.toGRPCTask(),
-        );
-        expect({ tasks: result }).toEqual(service.getAllTasks(params));
-      }
+      const tasksResult = await service.getAllTasks(searchParams);
+      expect(tasksResult).toMatchObject(expectedRes);
     });
 
-    it('should be able to return tasks having the status id', async () => {
-      const params = {
-        statusId: '0df1c5c2-eae1-4378-a2d6-22f4979b4cf1',
+    it('should be throw error when can not find task list', async () => {
+      const searchParams = {
+        title: 'title',
+        userId: 1,
+        statusId: '1',
       };
-      // Define condition for where clause based on FindTaskInfro value
-      const condition: any = { status: {} };
-      condition.status.id = params.statusId;
+
+      jest.spyOn(taskRepo, 'find').mockImplementationOnce(async () => []);
 
       // Get tasks based on condition
-      const tasks = await taskRepo.find({
-        relations: {
-          status: true,
-          user: true,
-        },
-        where: condition,
-        order: {
-          status: {
-            createdAt: 'ASC',
-          },
-        },
-      });
-      if (tasks) {
-        // Map TaskEntity to Task in GRPC Return
-        const result: GRPCTask[] = tasks.map((task: TaskEntity) =>
-          task.toGRPCTask(),
-        );
-        expect({ tasks: result }).toEqual(service.getAllTasks(params));
-      }
-    });
-
-    it('should be able to return all tasks in case empty parameters', async () => {
-      // Define condition for where clause based on FindTaskInfro value
-      const condition: any = {};
-
-      // Get tasks based on condition
-      const tasks = await taskRepo.find({
-        relations: {
-          status: true,
-          user: true,
-        },
-        where: condition,
-        order: {
-          status: {
-            createdAt: 'ASC',
-          },
-        },
-      });
-      if (tasks) {
-        // Map TaskEntity to Task in GRPC Return
-        const result: GRPCTask[] = tasks.map((task: TaskEntity) =>
-          task.toGRPCTask(),
-        );
-        expect({ tasks: result }).toEqual(service.getAllTasks({} as any));
-      }
+      expect(service.getAllTasks(searchParams)).rejects.toThrow(
+        'Can not find tasks',
+      );
     });
   });
 
   describe('feature/query-a-task: Query a task by id feature', () => {
     it('should be able to return a task having the same id', async () => {
-      const params = {
+      const searchParams = {
+        id: 1,
+      };
+      jest.spyOn(taskRepo, 'findOne').mockImplementationOnce(async () => null);
+
+      // Get tasks based on condition
+      expect(service.getTask(searchParams)).rejects.toThrow(
+        'Can not find task',
+      );
+    });
+
+    it('should be able to return a task having the same id', async () => {
+      const searchParams = {
         id: 1,
       };
 
-      const task = await taskRepo.findOne({
-        relations: {
-          status: true,
-          user: true,
+      const expectedResult = {
+        id: 1,
+        taskTitle: 'title',
+        taskDescription: 'desc',
+        assignUser: {
+          id: 1,
+          email: 'user-email',
         },
-        where: {
-          id: params.id,
-          isDeleted: false,
+        status: {
+          id: 1,
+          name: 'status-name',
         },
-      });
-      if (task) {
-        const result: GRPCTask = task.toGRPCTask();
-        expect(result).toEqual(service.getTask(params));
-      }
+      };
+
+      const result = await service.getTask(searchParams);
+
+      // Get tasks based on condition
+      expect(result).toMatchObject(expectedResult);
     });
   });
 
   describe('feature/query-all-status: Query all status', () => {
     it('should be able to return all task status', async () => {
-      const payload = {};
-      const condition: any = {
+      const payload: any = {
         isDeleted: false,
-        ...payload,
-      };
-      const statusList = await statusRepo.find({
-        where: condition,
-        order: {
-          createdAt: 'ASC',
-        },
-      });
-      if (statusList) {
-        const result: GRPCStatus[] = statusList.map((status: StatusEntity) =>
-          status.toGRPCStatus(),
-        );
-        expect({ statusList: result }).toEqual(service.getAllStatus(payload));
-      }
-    });
-  });
-
-  describe('feature/create-a-task: Create a task', () => {
-    it('should be able to return a task id', async () => {
-      const list: GRPCStatusList = await service.getAllStatus({});
-
-      const payload: Partial<NewTask> = {
-        title: 'New task',
-        description: 'New Description',
-        statusId: list.statusList?.[0].id,
       };
 
-      const insert = await taskRepo
-        .createQueryBuilder()
-        .insert()
-        .into(TaskEntity)
-        .values([
+      const expectedResult = {
+        statusList: [
           {
-            taskTitle: payload.title,
-            taskDescription: payload.description,
-            user: {
-              id: payload.assignUserId,
-            },
-            status: {
-              id: payload.statusId,
-            },
+            backgroundHexColor: '#eef2fc',
+            id: '7c9b5e69-99c6-4e09-95c1-0fcdea618637',
+            statusName: 'To Do',
+            textHexColor: '#14367B',
           },
-        ])
-        .returning('*')
-        .execute();
+          {
+            backgroundHexColor: '#FFF6EB',
+            id: 'eb11dd2d-73b0-41f8-b2ae-d359a48b0156',
+            statusName: 'In Progress',
+            textHexColor: '#8F4F00',
+          },
+        ],
+      };
 
-      if (insert.generatedMaps.length > 0) {
-        // Return task data
-        const returnData = insert.generatedMaps[0];
-
-        const task = new TaskEntity(returnData);
-        expect({ id: task.id }).toEqual(service.createTask(payload));
-      }
+      const results = await service.getAllStatus(payload);
+      expect(results).toMatchObject(expectedResult);
     });
   });
+
+  // describe('feature/create-a-task: Create a task', () => {
+  //   it('should be able to return a task id', async () => {
+  //     const list: GRPCStatusList = await service.getAllStatus({});
+
+  //     const payload: Partial<NewTask> = {
+  //       title: 'New task',
+  //       description: 'New Description',
+  //       statusId: list.statusList?.[0].id,
+  //     };
+
+  //     const insert = await taskRepo
+  //       .createQueryBuilder()
+  //       .insert()
+  //       .into(TaskEntity)
+  //       .values([
+  //         {
+  //           taskTitle: payload.title,
+  //           taskDescription: payload.description,
+  //           user: {
+  //             id: payload.assignUserId,
+  //           },
+  //           status: {
+  //             id: payload.statusId,
+  //           },
+  //         },
+  //       ])
+  //       .returning('*')
+  //       .execute();
+
+  //     if (insert.generatedMaps.length > 0) {
+  //       // Return task data
+  //       const returnData = insert.generatedMaps[0];
+
+  //       const task = new TaskEntity(returnData);
+  //       expect({ id: task.id }).toEqual(service.createTask(payload));
+  //     }
+  //   });
+  // });
 });

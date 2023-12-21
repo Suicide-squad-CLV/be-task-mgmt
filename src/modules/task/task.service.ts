@@ -14,6 +14,10 @@ import {
   UpdatedTask,
 } from 'src/protos/task';
 import StatusEntity from './entities/status.entity';
+import {
+  convertStatusEntityToGRPC,
+  convertTaskEntityToGRPC,
+} from 'src/common/helpers';
 
 @Injectable()
 export class TaskService {
@@ -39,7 +43,7 @@ export class TaskService {
     if (statusList) {
       // Map TaskEntity to GRPCTask
       const result: GRPCStatus[] = statusList.map((status: StatusEntity) =>
-        status.toGRPCStatus(),
+        convertStatusEntityToGRPC(status),
       );
       return { statusList: result };
     }
@@ -85,16 +89,16 @@ export class TaskService {
       },
     });
 
-    if (tasks) {
+    if (tasks.length > 0) {
       // Map TaskEntity to GRPCTask
       const result: GRPCTask[] = tasks.map((task: TaskEntity) =>
-        task.toGRPCTask(),
+        convertTaskEntityToGRPC(task),
       );
       return { tasks: result };
+    } else {
+      // Throw error if there is no task
+      throw new HttpException('Can not find tasks', HttpStatus.NOT_FOUND);
     }
-
-    // Throw error if there is no task
-    throw new HttpException('Can not find tasks', HttpStatus.NOT_FOUND);
   }
 
   async getTask(payload: TaskId): Promise<GRPCTask> {
@@ -111,7 +115,7 @@ export class TaskService {
 
     if (task) {
       // Map TaskEntity to GRPCTask
-      return task.toGRPCTask();
+      return convertTaskEntityToGRPC(task);
     }
 
     // Throw error if there is no task
