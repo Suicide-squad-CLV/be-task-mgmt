@@ -33,7 +33,7 @@ message UpdatedTask {
   string description = 3;
   string statusId = 4;
   int32 assignUserId = 5;
-  optional string deleteFlag = 6;
+  optional bool deleteFlag = 6;
 }
 
 message GRPCTask {

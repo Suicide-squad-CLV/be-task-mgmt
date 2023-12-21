@@ -83,6 +83,7 @@ export class TaskService {
         },
       ],
       order: {
+        updatedAt: 'DESC',
         status: {
           createdAt: 'ASC',
         },
@@ -157,6 +158,7 @@ export class TaskService {
 
   async updateTask(payload: UpdatedTask): Promise<TaskId> {
     console.log(payload);
+
     const updatedData: any = {};
 
     if (payload.title) {
@@ -175,8 +177,8 @@ export class TaskService {
         id: payload.assignUserId,
       };
     }
-    if (payload.deleteFlag) {
-      const isPersisted = await this.taskRepository.findOne({
+    if (payload.deleteFlag !== undefined) {
+      const task = await this.taskRepository.findOne({
         select: {
           status: {
             persisted: true,
@@ -190,7 +192,7 @@ export class TaskService {
           isDeleted: false,
         },
       });
-      if (!isPersisted) {
+      if (!task?.status?.persisted) {
         updatedData.isDeleted = payload.deleteFlag;
       }
     }
