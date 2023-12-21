@@ -12,6 +12,7 @@ describe('TaskService', () => {
 
   const TASK_REPOSITORY_TOKEN = getRepositoryToken(TaskEntity);
   const STATUS_REPOSITORY_TOKEN = getRepositoryToken(StatusEntity);
+
   const mockTaskEntityDataList = [
     {
       id: 1,
@@ -159,7 +160,7 @@ describe('TaskService', () => {
       expect(tasksResult).toMatchObject(expectedRes);
     });
 
-    it('should be throw error when can not find task list', async () => {
+    it('should throw error when can not find task list', async () => {
       const searchParams = {
         title: 'title',
         userId: 1,
@@ -176,7 +177,7 @@ describe('TaskService', () => {
   });
 
   describe('feature/query-a-task: Query a task by id feature', () => {
-    it('should be able to return a task having the same id', async () => {
+    it('should throw error when can not find a task', async () => {
       const searchParams = {
         id: 1,
       };
@@ -184,7 +185,7 @@ describe('TaskService', () => {
 
       // Get tasks based on condition
       expect(service.getTask(searchParams)).rejects.toThrow(
-        'Can not find task',
+        'Can not find a task',
       );
     });
 
