@@ -27,7 +27,7 @@ export interface UpdatedTask {
   description: string;
   statusId: string;
   assignUserId: number;
-  deleteFlag?: string | undefined;
+  deleteFlag?: boolean | undefined;
 }
 
 export interface GRPCTask {

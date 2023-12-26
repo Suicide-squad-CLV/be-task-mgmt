@@ -83,6 +83,7 @@ export class TaskService {
         },
       ],
       order: {
+        updatedAt: 'DESC',
         status: {
           createdAt: 'ASC',
         },
@@ -119,7 +120,7 @@ export class TaskService {
     }
 
     // Throw error if there is no task
-    throw new HttpException('Can not find task', HttpStatus.NOT_FOUND);
+    throw new HttpException('Can not find a task', HttpStatus.NOT_FOUND);
   }
 
   async createTask(payload: Partial<NewTask>): Promise<TaskId> {
@@ -157,6 +158,7 @@ export class TaskService {
 
   async updateTask(payload: UpdatedTask): Promise<TaskId> {
     console.log(payload);
+
     const updatedData: any = {};
 
     if (payload.title) {
@@ -175,8 +177,24 @@ export class TaskService {
         id: payload.assignUserId,
       };
     }
-    if (payload.deleteFlag) {
-      updatedData.isDeleted = payload.deleteFlag;
+    if (payload.deleteFlag !== undefined) {
+      const task = await this.taskRepository.findOne({
+        select: {
+          status: {
+            persisted: true,
+          },
+        },
+        relations: {
+          status: true,
+        },
+        where: {
+          id: payload.taskId,
+          isDeleted: false,
+        },
+      });
+      if (!task?.status?.persisted) {
+        updatedData.isDeleted = payload.deleteFlag;
+      }
     }
 
     console.log(updatedData);
