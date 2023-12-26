@@ -12,12 +12,12 @@ export class TaskStatusSeeder implements Seeder {
       if (status === 'Archived') {
         data.push({
           statusName: status,
-          persisted: false,
+          persisted: true,
         });
       } else {
         data.push({
           statusName: status,
-          persisted: true,
+          persisted: false,
         });
       }
     });

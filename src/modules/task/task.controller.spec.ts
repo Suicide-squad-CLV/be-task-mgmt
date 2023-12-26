@@ -3,6 +3,8 @@ import { TaskController } from './task.controller';
 import { TaskService } from './task.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import TaskEntity from './entities/task.entity';
+import { Repository } from 'typeorm';
+import StatusEntity from './entities/status.entity';
 
 describe('TaskController', () => {
   let controller: TaskController;
@@ -17,8 +19,12 @@ describe('TaskController', () => {
         {
           provide: TASK_REPOSITORY_TOKEN,
           useValue: {
-            find: jest.fn(),
+            findAllStatus: jest.fn(),
           },
+        },
+        {
+          provide: getRepositoryToken(StatusEntity),
+          useClass: Repository,
         },
       ],
     }).compile();
