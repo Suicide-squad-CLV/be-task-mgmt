@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import UserEntity from './entities/user.entity';
 import { ILike, In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -86,10 +91,14 @@ export class UserService {
     const user = await this.usersRepository.findOne({
       where: { id, isDeleted: DeleteValue.NO },
     });
+
     if (user) {
       return user.getUserProto();
     }
-    throw new RpcException('User not found');
+
+    throw new RpcException(
+      new HttpException('User not found', HttpStatus.NOT_FOUND),
+    );
   }
 
   async create(registerDto: RegisterDto): Promise<User> {
@@ -117,7 +126,6 @@ export class UserService {
       await this.usersRepository.save(createdUser);
       return createdUser.getUserProto();
     } catch (error) {
-      console.log(error);
       if (error?.code === PostgresErrorCode.UniqueViolation) {
         throw new RpcException('User already exists');
       }
