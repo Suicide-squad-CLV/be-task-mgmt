@@ -93,7 +93,6 @@ describe('TaskService', () => {
           provide: STATUS_REPOSITORY_TOKEN,
           useValue: {
             find: jest.fn().mockResolvedValue(mockStatusEntityDataList),
-            findOne: jest.fn(),
           },
         },
       ],

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import TaskEntity from './entities/task.entity';
 import { ILike, Repository } from 'typeorm';
@@ -18,6 +18,8 @@ import {
   convertStatusEntityToGRPC,
   convertTaskEntityToGRPC,
 } from 'src/common/helpers';
+import { RpcException } from '@nestjs/microservices';
+import { status } from '@grpc/grpc-js';
 
 @Injectable()
 export class TaskService {
@@ -41,15 +43,18 @@ export class TaskService {
     });
 
     if (statusList) {
-      // Map TaskEntity to GRPCTask
+      // Map StatusEntity to GRPCStatus
       const result: GRPCStatus[] = statusList.map((status: StatusEntity) =>
         convertStatusEntityToGRPC(status),
       );
       return { statusList: result };
     }
 
-    // Throw error if there is no task
-    throw new HttpException('Can not find tasks', HttpStatus.NOT_FOUND);
+    // Throw error if there is no status
+    throw new RpcException({
+      details: 'Can not find status list',
+      code: status.UNAVAILABLE,
+    });
   }
 
   async getAllTasks(payload: Partial<TaskFields>): Promise<GRPCTaskList> {
@@ -96,10 +101,13 @@ export class TaskService {
         convertTaskEntityToGRPC(task),
       );
       return { tasks: result };
-    } else {
-      // Throw error if there is no task
-      throw new HttpException('Can not find tasks', HttpStatus.NOT_FOUND);
     }
+
+    // Throw error if there is no task
+    throw new RpcException({
+      details: 'Can not find tasks',
+      code: status.INVALID_ARGUMENT,
+    });
   }
 
   async getTask(payload: TaskId): Promise<GRPCTask> {
@@ -120,7 +128,10 @@ export class TaskService {
     }
 
     // Throw error if there is no task
-    throw new HttpException('Can not find a task', HttpStatus.NOT_FOUND);
+    throw new RpcException({
+      message: 'Can not find a task',
+      code: status.INVALID_ARGUMENT,
+    });
   }
 
   async createTask(payload: Partial<NewTask>): Promise<TaskId> {
@@ -152,13 +163,14 @@ export class TaskService {
       return { id: task.id };
     }
 
-    // Throw error if there is no task
-    throw new HttpException('Can not create a task', HttpStatus.NOT_FOUND);
+    // Throw error if there is no created task
+    throw new RpcException({
+      details: 'Can not create a task',
+      code: status.INVALID_ARGUMENT,
+    });
   }
 
   async updateTask(payload: UpdatedTask): Promise<TaskId> {
-    console.log(payload);
-
     const updatedData: any = {};
 
     if (payload.title) {
@@ -197,8 +209,6 @@ export class TaskService {
       }
     }
 
-    console.log(updatedData);
-
     const update = await this.taskRepository
       .createQueryBuilder()
       .update(TaskEntity)
@@ -207,7 +217,6 @@ export class TaskService {
       .returning('*')
       .execute();
 
-    console.log(update);
     if (update.raw.length > 0) {
       // Return task data
       const returnData = update.raw[0];
@@ -217,7 +226,10 @@ export class TaskService {
       return { id: task.id };
     }
 
-    // Throw error if there is no task
-    throw new HttpException('Can not update a task', HttpStatus.NOT_FOUND);
+    // Throw error if there is no updated task
+    throw new RpcException({
+      details: 'Can not update a task',
+      code: status.INVALID_ARGUMENT,
+    });
   }
 }
